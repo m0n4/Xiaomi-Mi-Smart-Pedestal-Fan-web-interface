@@ -1,0 +1,373 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="1800">
+    <meta http-equiv="content-security-policy" content="default-src 'self'; script-src 'unsafe-inline' 'unsafe-eval'; style-src 'unsafe-inline'">
+    <title>Ventilateur</title>
+    <link rel="icon" href="favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-color: #dbd8d0;
+        }
+
+        #IsConnected {
+            margin-left: 20px;
+        }
+
+        span {
+            font-family: Verdana, Geneva, sans-serif;
+            font-size: 1.2em;
+        }
+
+        #Error {
+            display: none;
+            text-align: center;
+            font-family: Verdana, Geneva, sans-serif;
+            font-size: 1.2em;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            height: 10px;
+            border-radius: 5px;
+            background: #555;
+            outline: none;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 16px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            min-width: 94px;
+            -webkit-transition-duration: 0.4s;
+            transition-duration: 0.4s;
+            cursor: pointer;
+        }
+
+        .button1 {
+            background-color: white;
+            color: black;
+            border: 2px solid #4CAF50;
+        }
+
+        .button11 {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .button2 {
+            background-color: white;
+            color: black;
+            border: 2px solid #008CBA;
+        }
+
+        .button22 {
+            background-color: #008CBA;
+            color: white;
+        }
+
+        .button3 {
+            background-color: white;
+            color: black;
+            border: 2px solid #f44336;
+        }
+
+        .button33 {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .button4 {
+            background-color: white;
+            color: black;
+            border: 2px solid #555555;
+        }
+
+        .button44 {
+            background-color: #555555;
+            color: white;
+        }
+
+        .button5 {
+            background-color: white;
+            color: black;
+            border: 2px solid #e7e7e7;
+        }
+
+        .button55 {
+            background-color: #e7e7e7;
+            color: black;
+        }
+
+        #loader {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            z-index: 1;
+            width: 150px;
+            height: 150px;
+            margin: -75px 0 0 -75px;
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #3498db;
+            width: 120px;
+            height: 120px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+        }
+
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .animate-bottom {
+            position: relative;
+            -webkit-animation-name: animatebottom;
+            -webkit-animation-duration: 1s;
+            animation-name: animatebottom;
+            animation-duration: 1s
+        }
+
+        @-webkit-keyframes animatebottom {
+            from {
+                bottom: -100px;
+                opacity: 0
+            }
+
+            to {
+                bottom: 0px;
+                opacity: 1
+            }
+        }
+
+        @keyframes animatebottom {
+            from {
+                bottom: -100px;
+                opacity: 0
+            }
+
+            to {
+                bottom: 0;
+                opacity: 1
+            }
+        }
+
+        #myDiv {
+            display: none;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="loader"></div>
+
+    <div id="Error">
+        <p>Impossible de contacter le ventilateur<br />L'appareil est il sous tension ?</p>
+        <button id='Gauche' class="button button4" onclick="window.location.reload();">Recharger</button>
+    </div>
+
+    <div id="IsConnected">
+        <span>Power</span><br />
+        <button id='PowerOn' class="button button2" onclick="Send('on')">On</button>
+        <button id='PowerOff' class="button button3" onclick="Send('off')">Off</button>
+        <div id="IsOn">
+            <br /><span>Mode</span><br />
+            <button id='Naturel' class="button button1" onclick="Send('set_mode nature')">Naturel</button>
+            <button id='Normal' class="button button2" onclick="Send('set_mode normal')">Normal</button>
+            <br /><span>Vitesse</span><br />
+            <input id='Range' class='slider' type="range" min="0" max="100" step="1">
+            <button id='speed' class="button button4" onclick="Send('set_speed '+document.getElementById('speed').innerText)">Ok</button>
+            <script>
+                var slider = document.getElementById("Range");
+                document.getElementById('speed').innerText = slider.value;
+                slider.oninput = function() {
+                    document.getElementById('speed').innerText = this.value;
+                }
+            </script>
+            <br /><span>Rotation</span><br />
+            <button id='RotationOn' class="button button2" onclick="Send('set_oscillate 1')">On</button>
+            <button id='RotationOff' class="button button3" onclick="Send('set_oscillate 0')">Off</button>
+            <div id="Rotation">
+                <br /><span>Angle</span><br />
+                <button id='Angle30' class="button button1" onclick="Send('set_angle 30')">30</button>
+                <button id='Angle60' class="button button1" onclick="Send('set_angle 60')">60</button>
+                <button id='Angle90' class="button button1" onclick="Send(set_angle 90)">90</button>
+                <button id='Angle120' class="button button1" onclick="Send('set_angle 120')">120</button>
+                <button id='Angle140' class="button button1" onclick="Send('set_angle 140')">140</button>
+            </div>
+            <div id="Position">
+                <br /><span>Direction</span><br />
+                <button id='Droit' class="button button1" onclick="Send('set_rotate right')">Gauche</button>
+                <button id='Gauche' class="button button1" onclick="Send('set_rotate left')">Droite</button>
+            </div>
+            <br /><span>Extinction</span><br />
+            <input id='Range2' class='slider' type="range" min="0" max="480" step="60">
+            <button id='sleep' class="button button4" onclick="Send('delay_off '+document.getElementById('sleep').innerText)">Ok</button>
+            <script>
+                var slider = document.getElementById("Range2");
+                document.getElementById('sleep').innerText = slider.value;
+                slider.oninput = function() {
+                    document.getElementById('sleep').innerText = this.value;
+                }
+            </script>
+            <br /><span>Voyants</span><br />
+            <button id='VoyantsOn' class="button button2" onclick="Send('set_led 1')">On</button>
+            <button id='VoyantsOff' class="button button3" onclick="Send('set_led 0')">Off</button>
+            <br /><span>Sons</span><br />
+            <button id='SonsOn' class="button button2" onclick="Send('set_buzzer 1')">On</button>
+            <button id='SonsOff' class="button button3" onclick="Send('set_buzzer 0')">Off</button>
+            <br /><span>Touches</span><br />
+            <button id='TouchesOn' class="button button2" onclick="Send('set_child_lock 0')">On</button>
+            <button id='TouchesOff' class="button button3" onclick="Send('set_child_lock 1')">Off</button>
+        </div>
+    </div>
+
+    <script>
+        var auth_call = true;
+        const req = new XMLHttpRequest();
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", 'req.php', true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        xhr.onreadystatechange = function() {
+            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                document.getElementById("loader").style.display = "none";
+                if (xhr.responseText.includes("Unable to discover the device")) {
+                    document.getElementById('Error').style.display = "block";
+                    document.getElementById('IsConnected').style.display = "none";
+                } else {
+                    var arr = xhr.responseText.split(/\n/);
+                    var tab = [];
+                    var val = '';
+                    for (var i = 0; i < (arr.length - 1); i++) {
+                        val = arr[i].split(':')[1];
+                        tab.push((val.trim()));
+                    }
+                    if (tab[0] == 'on') {
+                        document.getElementById('PowerOn').classList.replace("button2", "button22");
+                        document.getElementById('PowerOff').classList.replace("button33", "button3");
+                    } else {
+                        document.getElementById('PowerOn').classList.replace("button22", "button2");
+                        document.getElementById('PowerOff').classList.replace("button3", "button33");
+                        document.getElementById('IsOn').style.display = "none";
+                    }
+                    if (tab[1] == 'OperationMode.Nature') {
+                        document.getElementById('Naturel').classList.replace("button1", "button11");
+                        document.getElementById('Normal').classList.replace("button22", "button2");
+                    } else {
+                        document.getElementById('Naturel').classList.replace("button11", "button1");
+                        document.getElementById('Normal').classList.replace("button2", "button22");
+                    }
+                    document.getElementById('Range').value = tab[2];
+                    document.getElementById('speed').innerText = tab[2];
+                    if (tab[3] == 'True') {
+                        document.getElementById('RotationOn').classList.replace("button2", "button22");
+                        document.getElementById('RotationOff').classList.replace("button33", "button3");
+                        document.getElementById('Rotation').style.display = "block";
+                        document.getElementById('Position').style.display = "none";
+                    } else {
+                        document.getElementById('RotationOn').classList.replace("button22", "button2");
+                        document.getElementById('RotationOff').classList.replace("button3", "button33");
+                        document.getElementById('Rotation').style.display = "none";
+                        document.getElementById('Position').style.display = "block";
+                    }
+                    if (tab[4]) {
+                        document.getElementById('Angle' + tab[4]).classList.replace("button1", "button11");
+                    }
+                    if (tab[5] == 'True') {
+                        document.getElementById('VoyantsOn').classList.replace("button2", "button22");
+                        document.getElementById('VoyantsOff').classList.replace("button33", "button3");
+                    } else {
+                        document.getElementById('VoyantsOn').classList.replace("button22", "button2");
+                        document.getElementById('VoyantsOff').classList.replace("button3", "button33");
+                    }
+                    if (tab[6] == 'True') {
+                        document.getElementById('SonsOn').classList.replace("button2", "button22");
+                        document.getElementById('SonsOff').classList.replace("button33", "button3");
+                    } else {
+                        document.getElementById('SonsOn').classList.replace("button22", "button2");
+                        document.getElementById('SonsOff').classList.replace("button3", "button33");
+                    }
+                    if (tab[7] == 'True') {
+                        document.getElementById('TouchesOn').classList.replace("button22", "button2");
+                        document.getElementById('TouchesOff').classList.replace("button3", "button33");
+                    } else {
+                        document.getElementById('TouchesOn').classList.replace("button2", "button22");
+                        document.getElementById('TouchesOff').classList.replace("button33", "button3");
+                    }
+                    if (tab[8]) {
+                        document.getElementById('Range2').value = tab[8];
+                        document.getElementById('sleep').innerText = tab[8];
+                    }
+                }
+            }
+        }
+        xhr.send("cmd=status");
+
+
+        function Send(param) {
+            if (param == 'delay_off 0') {
+                alert('impossible de mettre à 0\néteindre et rallumer le ventilateur');
+                document.location.reload(true);
+            }
+
+            if (auth_call) {
+                auth_call = false;
+                if (param.indexOf("delay_off") === -1 && param.indexOf("set_speed") === -1 && param.indexOf("set_rotate") === -1) {
+                    document.getElementById("loader").style.display = "block";
+                }
+                const req = new XMLHttpRequest();
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", 'req.php', true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+                xhr.onreadystatechange = function() {
+                    if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                        if (xhr.responseText.includes("Unable to discover the device")) {
+                            document.getElementById('Error').style.display = "block";
+                            document.getElementById('IsConnected').style.display = "none";
+                        } else if (xhr.responseText.includes("Setting delayed turn off") || xhr.responseText.includes("Setting speed to") || xhr.responseText.includes("Rotating the fan to the MoveDirection")) {
+                            auth_call = true;
+                        } else {
+                            document.location.reload(true);
+                        }
+                    }
+                }
+                xhr.send("cmd=" + param);
+            }
+        }
+    </script>
+
+</body>
+
+</html>
