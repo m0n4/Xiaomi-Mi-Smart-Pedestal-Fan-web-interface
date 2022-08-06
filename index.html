@@ -221,7 +221,7 @@
                 <br /><span>Angle</span><br />
                 <button id='Angle30' class="button button1" onclick="Send('set_angle 30')">30</button>
                 <button id='Angle60' class="button button1" onclick="Send('set_angle 60')">60</button>
-                <button id='Angle90' class="button button1" onclick="Send(set_angle 90)">90</button>
+                <button id='Angle90' class="button button1" onclick="Send('set_angle 90')">90</button>
                 <button id='Angle120' class="button button1" onclick="Send('set_angle 120')">120</button>
                 <button id='Angle140' class="button button1" onclick="Send('set_angle 140')">140</button>
             </div>
@@ -336,11 +336,6 @@
 
 
         function Send(param) {
-            if (param == 'delay_off 0') {
-                alert('impossible de mettre à 0\néteindre et rallumer le ventilateur');
-                document.location.reload(true);
-            }
-
             if (auth_call) {
                 auth_call = false;
                 if (param.indexOf("delay_off") === -1 && param.indexOf("set_speed") === -1 && param.indexOf("set_rotate") === -1) {
