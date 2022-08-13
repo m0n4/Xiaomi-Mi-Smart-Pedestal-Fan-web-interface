@@ -51,9 +51,16 @@
             font-size: 16px;
             margin: 4px 2px;
             min-width: 94px;
+            width: 160px;
             -webkit-transition-duration: 0.4s;
             transition-duration: 0.4s;
             cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .button:active {
+            position:relative;
+            top:3px;
         }
 
         .button1 {
@@ -110,6 +117,10 @@
             background-color: #e7e7e7;
             color: black;
         }
+
+        #Rotation > button {
+	    width: 103px;
+	}
 
         #loader {
             position: absolute;
@@ -204,8 +215,8 @@
             <br /><span>Mode</span><br />
             <button id='Naturel' class="button button1" onclick="Send('set_mode nature')">Naturel</button>
             <button id='Normal' class="button button2" onclick="Send('set_mode normal')">Normal</button>
-            <br /><span>Vitesse</span><br />
-            <input id='Range' class='slider' type="range" min="0" max="100" step="1">
+            <br /><br /><span>Vitesse</span><br />
+            <input id='Range' class='slider' type="range" min="1" max="100" step="1">
             <button id='speed' class="button button4" onclick="Send('set_speed '+document.getElementById('speed').innerText)">Ok</button>
             <script>
                 var slider = document.getElementById("Range");
